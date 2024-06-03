@@ -1,5 +1,7 @@
 import User from '../models/user.model.js';
 import AppError from "../utils/error.utils.js";
+import cloudinary from 'cloudinary';
+import fs from 'fs/promises';
 
 const cookieOptions = {
     maxAge : 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -31,17 +33,42 @@ const register = async (req, res, next) => {
         return next(new AppError ("User registration failed, please try again", 400));
     }
 
+    if(req.file){
+        console.log(req.file);
+        try{
+            const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                folder:'lms',
+                width:250,
+                height:250,
+                gravity:'faces',
+                crop: 'fill'
+            })
+
+            if(result){
+                user.avatar.public_id =  result.public_id;
+                user.avatar.secure_url =  result.secure_url;
+
+                fs.rm(`uploads/${req.file.filename}`)
+
+            }
+        }catch(e){
+            return next(
+                new AppError(error || 'File not uploaded, please try again..'),500
+            )
+        }
+    }
+
     await user.save();
     user.password = undefined;
     
     const token = await user.generateJWTToken();
 
+    res.cookie('token', token, cookieOptions)
     res.status(201).json({
         success:true,
         message:"User registered successfully",
         user,
     })
-    res.cookie('token', token, cookieOptions)
 };
 
 const login = async (req, res, next) => {
@@ -101,9 +128,32 @@ const getProfile = async (req, res, next) => {
     }
 };
 
+const forgotPassword = async (req, res, next) => {
+    const { email } = req.body;
+
+    if(!email) {
+        return next(new AppError('Email is required', 400));
+    }
+
+    const user = await User.findOne({ email });
+    if(!user){
+        return next(new AppError('Email not registered', 400));
+    }
+    const resetToken = await user.generatePasswordResetToken();
+
+    await user.save();
+    const resetPasswordURL = `${process.env.FRONTEND_URL}/reset-password`
+}
+
+const resetPassword = () => {
+
+}
+
 export{
     register,
     login,
     logout,
-    getProfile
+    getProfile,
+    forgotPassword,
+    resetPassword
 }
