@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getAllCourses, getLecturesByCourseId, createCourse, updateCourse, removeCourse, addLecturesToCourseById } from "../controllers/course.controller";
-import { authorizeSubscribers, authorizedRoles, isLoggedIn } from "../middlewares/auth.middleware";
+import { getAllCourses, getLecturesByCourseId, createCourse, updateCourse, removeCourse, addLecturesToCourseById } from "../controllers/course.controller.js";
+import { authorizeSubscribers, authorizedRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
+import upload from "../middlewares/multer.middleware.js";
 
 
 const router = Router();

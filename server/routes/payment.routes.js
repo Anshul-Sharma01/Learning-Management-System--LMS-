@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { allPayments, buySubsrciption, cancelSubscription, getRazorpayApiKey, verifySubscription } from "../controllers/payment.controller";
-import { authorizedRoles, isLoggedIn } from "../middlewares/auth.middleware";
+import { allPayments, buySubsrciption, cancelSubscription, getRazorpayApiKey, verifySubscription } from "../controllers/payment.controller.js";
+import { authorizedRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -25,5 +25,5 @@ router
 router
     .route("/")
     .get(isLoggedIn, authorizedRoles('ADMINH'), allPayments)
-
+    
 export default router;
