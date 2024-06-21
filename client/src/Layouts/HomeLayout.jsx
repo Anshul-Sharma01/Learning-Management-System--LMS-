@@ -3,6 +3,8 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import {Logout} from '../Redux/Slices/AuthSlice.js';
+
 
 function HomeLayout({ children }){
 
@@ -30,8 +32,8 @@ function HomeLayout({ children }){
 
     async function handleLogout(e){
         e.preventdefault();
-        // const res = await dispatch(logout());
-        // if(res?.payload?.success)
+        const res = await dispatch(Logout());
+        if(res?.payload?.success)
         navigate("/");
     }
 
@@ -76,7 +78,7 @@ function HomeLayout({ children }){
                         {!isLoggedIn && (
                             <li className="mt-auto w-full flex flex-col items-center">
                                 <button className="btn btn-primary px-4 py-1 font-semibold rounded-md w-full mb-2">
-                                    <Link to="/login">Login</Link>
+                                    <Link to='/login'>Login</Link>
                                 </button>
                                 <button className="btn btn-secondary px-4 py-1 font-semibold rounded-md w-full">
                                     <Link to="/signup">SignUp</Link>
